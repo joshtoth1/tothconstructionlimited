@@ -279,14 +279,15 @@ function fmtTime(ts){ return new Date(ts).toLocaleTimeString("en-NZ",{hour:"nume
 function durText(min){ const h=Math.floor(min/60), m=Math.round(min%60); return (h?h+"h ":"")+m+"m"; }
 function initials(name){ return name.split(" ").map(p=>p[0]).slice(0,2).join("").toUpperCase(); }
 
+let lastPayload="";
 async function loadState(){
   try{
     if(window.storage){
-      const r = await window.storage.get("tc:data");
-      if(r && r.value){ S = JSON.parse(r.value); return; }
+      const r = await window.storage.get("tc:data:v2", true);
+      if(r && r.value){ S = JSON.parse(r.value); lastPayload=r.value; return; }
     }
   }catch(e){ /* key missing or storage unavailable */ }
-  if(memStore["tc:data"]){ S = JSON.parse(memStore["tc:data"]); return; }
+  if(memStore["tc:data:v2"]){ S = JSON.parse(memStore["tc:data:v2"]); return; }
   S = seed();
   await saveState();
 }
@@ -296,53 +297,32 @@ async function saveState(){
   recent.forEach(t=>{ if(t.photo) delete t.photo; });
   const payload = JSON.stringify(S);
   try{
-    if(window.storage){ await window.storage.set("tc:data", payload); return; }
+    if(window.storage){ await window.storage.set("tc:data:v2", payload, true); lastPayload=payload; return; }
   }catch(e){ console.error("storage save failed", e); }
-  memStore["tc:data"] = payload;
+  memStore["tc:data:v2"] = payload;
+}
+async function refreshState(){
+  // pull latest shared data so sign-ons from other devices appear live
+  if(!window.storage) return;
+  if(document.getElementById("sheetBg")) return; // don't clobber an open form
+  try{
+    const r = await window.storage.get("tc:data:v2", true);
+    if(r && r.value && r.value!==lastPayload){
+      S = JSON.parse(r.value); lastPayload=r.value;
+      render();
+    }
+  }catch(e){ /* ignore transient errors */ }
 }
 
 function seed(){
-  const t = new Date();
-  const iso = (off)=>{ const d=new Date(t); d.setDate(d.getDate()+off); return todayISO(d); };
-  const w1={id:uid(),name:"Istvan Toth",role:"Managing Director · LBP"},
-        w2={id:uid(),name:"Sam Ririnui",role:"Qualified Carpenter"},
-        w3={id:uid(),name:"Jake Wilson",role:"Qualified Carpenter"},
-        w4={id:uid(),name:"Aroha Ngata",role:"Apprentice"},
-        w5={id:uid(),name:"Danny Pereira",role:"Labourer"};
-  const j1={id:uid(),code:"TC-J-1041",title:"Half Moon Bay Renovation",client:"M. & L. Carter",site:"Half Moon Bay, Auckland",service:"Renovation",status:"active",colour:"#29ABE2",start:iso(-6),end:iso(20),assigned:[w2.id,w4.id,w5.id],steps:[
-      {id:uid(),name:"Demolition & strip-out",date:iso(-6),done:true},
-      {id:uid(),name:"First fix carpentry & framing",date:iso(-1),done:true},
-      {id:uid(),name:"GIB, stopping & paint",date:iso(4),done:false},
-      {id:uid(),name:"Second fix & finishing",date:iso(14),done:false}]},
-        j2={id:uid(),code:"TC-J-1042",title:"Titirangi Retaining Wall & Deck",client:"Blue Ridge Property Ltd",site:"Titirangi, Auckland",service:"Retaining Walls",status:"scheduled",colour:"#2FB56B",start:iso(4),end:iso(15),assigned:[w3.id],steps:[
-      {id:uid(),name:"Earthworks & pile holes",date:iso(4),done:false},
-      {id:uid(),name:"Timber wall build & drainage",date:iso(7),done:false},
-      {id:uid(),name:"Deck frame, boards & finish",date:iso(12),done:false}]},
-        j3={id:uid(),code:"TC-J-1043",title:"Remuera Main Bathroom Build",client:"S. Patel",site:"Remuera, Auckland",service:"Bathroom",status:"quoted",colour:"#F0A422",start:iso(20),end:iso(34),assigned:[],steps:[
-      {id:uid(),name:"Strip-out & plumbing rough-in",date:iso(20),done:false},
-      {id:uid(),name:"Waterproofing & tiling",date:iso(25),done:false},
-      {id:uid(),name:"Fit-off, glass & finish",date:iso(31),done:false}]};
-  const q1={id:uid(),number:"TC-Q-2087",date:iso(-3),client:"S. Patel",contact:"Sanjay Patel",email:"s.patel@email.co.nz",siteAddress:"Remuera, Auckland",jobTitle:"Main Bathroom Build",validDays:30,status:"sent",notes:"Price excludes tapware, tiles and sanitaryware beyond the PC sum allowance, and any unforeseen structural or moisture damage discovered during strip-out. Variations will be quoted and approved before proceeding.",items:[
-      {desc:"Strip-out, disposal & site protection",category:"Labour",qty:14,unit:"hrs",rate:78},
-      {desc:"Carpentry & building work — framing, linings, second fix",category:"Labour",qty:56,unit:"hrs",rate:78},
-      {desc:"Plumbing rough-in & fit-off (subcontract)",category:"Subcontract",qty:1,unit:"lot",rate:3400},
-      {desc:"Waterproofing & tiling (subcontract)",category:"Subcontract",qty:1,unit:"lot",rate:5200},
-      {desc:"Vanity, shower & fittings — PC sum allowance",category:"Materials",qty:1,unit:"lot",rate:4500},
-      {desc:"Timber, GIB, fixings & consumables",category:"Materials",qty:1,unit:"lot",rate:1650}]};
   return {
-    workers:[w1,w2,w3,w4,w5],
-    jobs:[j1,j2,j3],
-    quotes:[q1],
-    timesheets:[
-      {id:uid(),workerId:w2.id,jobId:j1.id,date:iso(-1),start:Date.now()-90000000,end:Date.now()-59400000,minutes:510},
-      {id:uid(),workerId:w4.id,jobId:j1.id,date:iso(-1),start:Date.now()-89000000,end:Date.now()-60600000,minutes:473}
-    ],
+    workers:[],
+    jobs:[],
+    quotes:[],
+    timesheets:[],
     sessions:[],
-    notifications:[
-      {id:uid(),ts:Date.now()-86400000,text:"Sam, Aroha & Danny allocated to Half Moon Bay Renovation",workerIds:[w2.id,w4.id,w5.id]},
-      {id:uid(),ts:Date.now()-172800000,text:"Jake allocated to Titirangi Retaining Wall & Deck",workerIds:[w3.id]}
-    ],
-    counters:{quote:2088, job:1044},
+    notifications:[],
+    counters:{quote:1001, job:1001},
     company:{name:"Toth Construction Limited",tag:"New Builds · Renovations · Bathrooms · Decks & Retaining Walls",addr:"Auckland, New Zealand",email:"office@tothconstruction.co.nz",phone:"09 000 0000",gstNo:"123-456-789",director:"Istvan Toth",directorTitle:"Managing Director · Licensed Building Practitioner",pin:"8684"}
   };
 }
@@ -578,7 +558,8 @@ function startDashTick(){
     document.querySelectorAll(".live-dur").forEach(el=>{
       el.textContent = durText((Date.now()-Number(el.dataset.start))/60000);
     });
-  }, 30000);
+    refreshState();
+  }, 20000);
 }
 
 /* ---- Jobs ---- */
@@ -587,7 +568,7 @@ function empJobs(){
   return `
     <button class="btn primary" onclick="openJobForm()">+ New job</button>
     <div class="eyebrow">${roofSVG(15,"var(--blue)")} All jobs <span class="count">${jobs.length}</span></div>
-    ${jobs.map(j=>{
+    ${jobs.length ? jobs.map(j=>{
       const crew=j.assigned.map(id=>workerById(id)).filter(Boolean);
       const stepsDone=j.steps.filter(s=>s.done).length;
       return `<div class="card" onclick="openJobDetail('${j.id}')" role="button" tabindex="0">
@@ -603,7 +584,7 @@ function empJobs(){
           <span>${icons.cal.replace('<svg','<svg width="14" height="14" style="vertical-align:-2px"')} ${fmtDate(j.start)} → ${fmtDate(j.end)}</span>
           <span style="margin-left:auto">${crew.length} crew · ${stepsDone}/${j.steps.length} steps</span>
         </div>
-      </div>`;}).join("")}`;
+      </div>`;}).join("") : `<div class="empty">${icons.jobs.replace('currentColor','#9EA1A8').replace('<svg','<svg width="44" height="44"')}<div class="e-t">No jobs yet</div>Create your first job above — crew can be allocated as you go.</div>`}`;
 }
 
 function openJobDetail(id){
@@ -1099,15 +1080,16 @@ function renderEmployee(){
 }
 function backToWho(){ closeSheet(); route.workerId=null; route.tab="who"; render(); }
 function renderWho(){
+  tick = setInterval(refreshState, 20000);
   $app.innerHTML = `<div class="screen">${topbar("Employee portal")}<div class="scroll">
     <div class="eyebrow">${roofSVG(15,"var(--blue)")} Who's clocking in?</div>
-    ${S.workers.map(w=>{
+    ${S.workers.length ? S.workers.map(w=>{
       const on=sessionFor(w.id);
       return `<button class="card row ${on?'onsite':''}" style="width:100%;text-align:left" onclick="pickWorker('${w.id}')">
         <div class="avatar">${initials(w.name)}</div>
         <div class="grow"><b class="w-name" style="font-size:16px">${esc(w.name)}</b><div class="muted">${esc(w.role)}</div></div>
         ${on?'<span class="row" style="gap:6px"><span class="pulse"></span><span class="chip green">On site</span></span>':""}
-      </button>`;}).join("")}
+      </button>`;}).join("") : `<div class="empty">${icons.team.replace('currentColor','#9EA1A8').replace('<svg','<svg width="44" height="44"')}<div class="e-t">No crew yet</div>Add your first worker below to get started.</div>`}
     <button class="btn ghost" style="margin-top:6px" onclick="openAddWorker()">+ Add worker</button>
   </div></div>`;
 }
