@@ -1,0 +1,44 @@
+// wrangler.jsonc — Toth Construction Job Board
+// Place at the ROOT of the joshtoth1/tothconstructionlimited repo.
+// If a wrangler.toml or wrangler.jsonc already exists there, merge these
+// settings into it instead (the important additions are "main",
+// "kv_namespaces", "vars", and the "binding" inside "assets").
+//
+// REPO LAYOUT THIS EXPECTS:
+//   /wrangler.jsonc          <- this file
+//   /worker.js               <- the API + assets script provided earlier
+//   /public/index.html       <- the Job Board app (move your site files into /public)
+//
+// TWO VALUES TO FILL IN:
+//   1. kv_namespaces id — Cloudflare dashboard → Storage & Databases → KV →
+//      jobboard → copy the Namespace ID and paste below.
+//   2. APP_KEY — invent a long random phrase, and set the SAME value in the
+//      APP_KEY constant near the top of the app HTML.
+{
+  "name": "tothconstructionlimited",
+  "main": "worker.js",
+  "compatibility_date": "2026-07-05",
+  "compatibility_flags": ["nodejs_compat"],
+
+  // Static site files. "binding": "ASSETS" is what lets worker.js pass
+  // non-API requests through to the site.
+  "assets": {
+    "directory": "./public",
+    "binding": "ASSETS"
+  },
+
+  // Crew data store — paste the jobboard namespace ID here.
+  "kv_namespaces": [
+    {
+      "binding": "JOBBOARD",
+      "id": "7fe3fca7267a40028e4ac113c83504bd"
+    }
+  ],
+
+  // Light shared secret checked by the API. Must match the app HTML.
+  // (It can be moved to a proper dashboard secret later — once the Worker
+  // has a script, run: npx wrangler secret put APP_KEY)
+  "vars": {
+    "APP_KEY": "falcon-hammer-4471-kereru"
+  }
+}
