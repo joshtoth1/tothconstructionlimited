@@ -4,6 +4,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Toth Construction — Job Board</title>
+<meta name="theme-color" content="#3E3E3E">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Job Board">
+<meta name="description" content="Toth Construction Limited — jobs, crew sign-on, timesheets & quoting">
+<link rel="icon" id="appIcon" href="">
+<link rel="apple-touch-icon" id="appIconTouch" href="">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -49,6 +57,62 @@ input,select,textarea{font-family:inherit;font-size:16px}
 
 .screen{flex:1;display:flex;flex-direction:column;overflow:hidden}
 .scroll{flex:1;overflow-y:auto;padding:16px 16px 96px;-webkit-overflow-scrolling:touch}
+
+/* ---------- motion & effects ---------- */
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+.scroll>*{animation:fadeUp .32s ease both}
+.scroll>*:nth-child(2){animation-delay:.04s}
+.scroll>*:nth-child(3){animation-delay:.08s}
+.scroll>*:nth-child(4){animation-delay:.12s}
+.scroll>*:nth-child(5){animation-delay:.16s}
+.scroll>*:nth-child(6){animation-delay:.2s}
+.scroll>*:nth-child(7){animation-delay:.24s}
+.scroll>*:nth-child(n+8){animation-delay:.28s}
+
+@keyframes glow{0%,100%{filter:drop-shadow(0 0 0 rgba(41,171,226,0))}50%{filter:drop-shadow(0 0 28px rgba(41,171,226,.5))}}
+.gate img{animation:fadeUp .5s ease both, glow 4s 1.2s ease-in-out infinite}
+
+/* LED glow accents */
+@keyframes ledBreathe{0%,100%{box-shadow:0 0 6px rgba(47,181,107,.55)}50%{box-shadow:0 0 14px rgba(47,181,107,.95)}}
+.big-clock{text-shadow:0 0 18px rgba(41,171,226,.4)}
+.signon-hero .big-clock{color:#fff;text-shadow:0 0 10px rgba(255,255,255,.35),0 0 26px rgba(41,171,226,.6)}
+.bnav button.on svg{filter:drop-shadow(0 0 7px rgba(41,171,226,.85))}
+.bnav button.on{text-shadow:0 0 10px rgba(41,171,226,.5)}
+.pin-dots span.fill{box-shadow:0 0 12px rgba(41,171,226,.75)}
+.pulse{box-shadow:0 0 8px rgba(47,181,107,.7);animation:ledBreathe 1.6s ease-in-out infinite}
+.card.onsite .avatar{box-shadow:0 0 12px rgba(47,181,107,.5)}
+.chip.green{box-shadow:0 0 8px rgba(47,181,107,.25)}
+.totals .t-row.grand b{text-shadow:0 0 16px rgba(41,171,226,.6)}
+.cam-wrap.live .cam-cap{animation:capGlow 1.8s ease-in-out infinite}
+@keyframes capGlow{0%,100%{box-shadow:0 4px 14px rgba(0,0,0,.4),0 0 8px rgba(41,171,226,.5)}50%{box-shadow:0 4px 14px rgba(0,0,0,.4),0 0 22px rgba(41,171,226,.95)}}
+.tb-title{text-shadow:0 0 12px rgba(0,0,0,.3)}
+.gate h1{animation:fadeUp .5s .1s ease both}
+.gate .g-sub{animation:fadeUp .5s .16s ease both}
+.gate-btn{animation:fadeUp .45s ease both}
+.gate-btn:nth-of-type(1){animation-delay:.22s}
+.gate-btn.emp{animation-delay:.3s}
+.gate-foot{animation:fadeUp .5s .4s ease both}
+
+@keyframes popIn{0%{transform:scale(.5)}70%{transform:scale(1.15)}100%{transform:scale(1)}}
+.pin-dots span.fill{animation:popIn .16s ease}
+
+@keyframes growBar{from{width:0 !important}}
+.jprog i{animation:growBar .7s cubic-bezier(.2,.7,.3,1)}
+
+#toast{transform:translate(-50%,10px)}
+#toast.show{transform:translate(-50%,0)}
+
+.btn.primary{position:relative;overflow:hidden}
+.btn.primary::after{content:"";position:absolute;top:0;left:-70%;width:45%;height:100%;background:linear-gradient(105deg,transparent,rgba(255,255,255,.35),transparent);transform:skewX(-18deg);animation:sheen 4.2s 1.4s ease-in-out infinite}
+@keyframes sheen{0%,72%{left:-70%}88%,100%{left:130%}}
+
+.cf{position:fixed;top:-14px;width:9px;height:13px;z-index:95;pointer-events:none;animation:cfall linear forwards;opacity:.95}
+@keyframes cfall{to{transform:translateY(106vh) rotate(760deg)}}
+
+@media(prefers-reduced-motion:reduce){
+  .scroll>*,.gate img,.gate h1,.gate .g-sub,.gate-btn,.gate-foot,.jprog i,.pin-dots span.fill,.btn.primary::after,.pulse,.cam-wrap.live .cam-cap{animation:none}
+  #toast,#toast.show{transform:translate(-50%,0)}
+}
 
 /* ---------- top bar ---------- */
 .topbar{background:var(--charcoal);color:#fff;padding:14px 16px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:20}
@@ -135,8 +199,13 @@ input,select,textarea{font-family:inherit;font-size:16px}
 .btn:disabled{opacity:.45;transform:none}
 
 /* forms */
-.field{margin-bottom:12px}
+.field{margin-bottom:12px;position:relative}
 .field label{display:block;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.addr-list{position:absolute;left:0;right:0;top:100%;margin-top:4px;background:#fff;border:1.5px solid var(--blue);border-radius:12px;box-shadow:0 12px 30px rgba(0,0,0,.18);z-index:60;overflow:hidden}
+.addr-list button{display:block;width:100%;text-align:left;padding:11px 12px;font-size:13.5px;border-bottom:1px solid var(--line);line-height:1.3}
+.addr-list button:last-of-type{border-bottom:none}
+.addr-list button:active,.addr-list button:hover{background:var(--blue-tint)}
+.addr-credit{padding:5px 12px;font-size:10px;color:var(--muted);background:#F7F8F9;text-align:right}
 .field input,.field select,.field textarea{width:100%;padding:12px;border:1.5px solid var(--line);border-radius:11px;background:#fff;color:var(--charcoal-ink)}
 .field input:focus,.field select:focus,.field textarea:focus{outline:2px solid var(--blue);outline-offset:-1px;border-color:var(--blue)}
 .f2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
@@ -225,6 +294,35 @@ input,select,textarea{font-family:inherit;font-size:16px}
 .fit-full{width:100%;max-width:340px;border-radius:16px;display:block;margin:0 auto 12px;border:3px solid var(--success)}
 .appr-actions{display:flex;gap:8px;margin-top:10px}
 
+/* weather */
+.wx-strip{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;-webkit-overflow-scrolling:touch}
+.wx-day{background:var(--charcoal);border-radius:12px;padding:10px 12px;text-align:center;color:#fff;min-width:76px;flex-shrink:0}
+.wx-day .w-d{font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:#B4B7BD;font-weight:600;margin-bottom:3px}
+.wx-day .w-e{font-size:22px;line-height:1.2}
+.wx-day .w-t{font-family:var(--disp);font-size:16px;font-weight:700;margin-top:2px}
+.wx-day .w-t small{color:#9EA1A8;font-weight:600;font-size:12px}
+.wx-day .w-r{font-size:10.5px;color:#7FC9EC;margin-top:2px;font-weight:600}
+.cal-wx{position:absolute;top:3px;right:4px;font-size:10px;line-height:1;pointer-events:none}
+
+/* progress photos */
+.pgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.pthumb{width:100%;aspect-ratio:1;object-fit:cover;border-radius:10px;border:1.5px solid var(--line);cursor:pointer;display:block}
+.pthumb:active{border-color:var(--blue)}
+.pstrip{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;-webkit-overflow-scrolling:touch}
+.pstrip img{width:88px;height:88px;object-fit:cover;border-radius:12px;border:1.5px solid var(--line);flex-shrink:0;cursor:pointer}
+.pfull{width:100%;border-radius:16px;display:block;margin-bottom:12px;border:1.5px solid var(--line)}
+
+/* styled confirm dialog (replaces browser confirm) */
+.confirm-bg{position:fixed;inset:0;background:rgba(30,31,34,.6);z-index:80;display:flex;align-items:center;justify-content:center;padding:24px;animation:fdin .15s ease}
+.confirm-card{background:#fff;border-radius:18px;padding:22px 20px;max-width:360px;width:100%;text-align:center;box-shadow:0 18px 50px rgba(0,0,0,.35)}
+.confirm-card h4{font-family:var(--disp);font-size:19px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px}
+.confirm-card p{font-size:14px;color:var(--muted);line-height:1.45;margin-bottom:16px}
+.confirm-card .row{gap:8px}
+
+/* job progress */
+.jprog{height:6px;border-radius:4px;background:#ECEDEF;overflow:hidden;margin-top:9px}
+.jprog i{display:block;height:100%;border-radius:4px;transition:width .3s}
+
 .totals{background:var(--charcoal);color:#fff;border-radius:var(--radius);padding:14px;margin-top:12px}
 .totals .t-row{display:flex;justify-content:space-between;padding:4px 0;font-size:14px;color:#C6C9CE}
 .totals .t-row.grand{border-top:1px solid #5A5B60;margin-top:8px;padding-top:10px;color:#fff;font-size:17px;font-weight:700}
@@ -246,6 +344,12 @@ input,select,textarea{font-family:inherit;font-size:16px}
 
 .step-line{display:flex;align-items:center;gap:9px;padding:7px 0;font-size:13.5px;border-bottom:1px dashed var(--line)}
 .step-line:last-child{border-bottom:none}
+.step-date{padding:5px 6px;border:1.5px solid var(--line);border-radius:8px;font-size:12px;color:var(--muted);background:#fff;width:122px;flex-shrink:0}
+.step-date:focus{outline:2px solid var(--blue);outline-offset:-1px;color:var(--charcoal-ink)}
+.step-name{flex:1;min-width:0;border:1px solid transparent;border-radius:7px;background:transparent;font:inherit;padding:4px 6px}
+.step-name:focus{outline:none;border-color:var(--blue);background:#fff}
+.step-x{width:28px;height:28px;color:var(--danger);font-size:14px;font-weight:700;flex-shrink:0;border-radius:8px}
+.step-x:active{background:var(--danger-tint)}
 .step-tick{width:20px;height:20px;border-radius:6px;border:2px solid #C9CCD1;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:800}
 .step-tick.done{background:var(--success);border-color:var(--success)}
 .fab-space{height:8px}
@@ -261,7 +365,67 @@ const LOGO = "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAQDAwMDAgQ
 
 /* ================= STATE & STORAGE ================= */
 const GST = 0.15;
+const APP_VERSION = "1.10";
 const SERVICES = ["New Build","Renovation","Bathroom","Deck","Retaining Walls","Earthworks","Other"];
+
+/* styled confirm — replaces browser confirm() for a professional feel */
+let confirmCb=null;
+function askConfirm(title, message, confirmLabel, cb){
+  confirmCb=cb;
+  const bg=document.createElement("div");
+  bg.className="confirm-bg"; bg.id="confirmBg";
+  bg.innerHTML=`<div class="confirm-card" role="alertdialog" aria-label="${title}">
+    <h4>${title}</h4><p>${message}</p>
+    <div class="row">
+      <button class="btn ghost" style="flex:1" onclick="runConfirm(false)">Cancel</button>
+      <button class="btn danger" style="flex:1" onclick="runConfirm(true)">${confirmLabel}</button>
+    </div></div>`;
+  bg.addEventListener("click",e=>{ if(e.target===bg) runConfirm(false); });
+  document.body.appendChild(bg);
+}
+function runConfirm(yes){
+  const bg=document.getElementById("confirmBg"); if(bg) bg.remove();
+  const cb=confirmCb; confirmCb=null;
+  if(yes && cb) cb();
+}
+
+/* stat numbers count up on render */
+function reducedMotion(){ return window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches; }
+function animateStats(){
+  if(reducedMotion()) return;
+  document.querySelectorAll(".stat .s-n").forEach(el=>{
+    const raw=el.textContent.trim();
+    const target=parseFloat(raw);
+    if(isNaN(target) || target===0) return;
+    const dec=raw.includes(".")?1:0;
+    const t0=performance.now(), dur=620;
+    function step(t){
+      const p=Math.min(1,(t-t0)/dur);
+      const e=1-Math.pow(1-p,3);
+      el.textContent=(target*e).toFixed(dec);
+      if(p<1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  });
+}
+
+/* brand-coloured confetti burst */
+function celebrate(){
+  if(reducedMotion()) return;
+  const colours=["#29ABE2","#2FB56B","#F0A422","#FFFFFF","#1B8AC0"];
+  for(let i=0;i<28;i++){
+    const p=document.createElement("i");
+    p.className="cf";
+    p.style.left=(Math.random()*100)+"vw";
+    p.style.background=colours[i%colours.length];
+    p.style.animationDuration=(0.9+Math.random()*1.0)+"s";
+    p.style.animationDelay=(Math.random()*0.18)+"s";
+    p.style.transform=`rotate(${Math.floor(Math.random()*360)}deg)`;
+    p.style.borderRadius=Math.random()>.5?"50%":"2px";
+    document.body.appendChild(p);
+    setTimeout(()=>p.remove(),2400);
+  }
+}
 let S = null;              // app state
 let route = {portal:null, tab:null, workerId:null};
 let calCursor = new Date(); calCursor.setDate(1);
@@ -286,7 +450,7 @@ let warnedLocal=false;
 /* Sync backend — see README: deploy functions/api/state.js on Cloudflare with a KV
    binding, set APP_KEY to the same secret there and here, then redeploy. */
 const SYNC_URL = "/api/state";
-const APP_KEY  = "falcon-hammer-4471-kereru";
+const APP_KEY  = "toth-jobboard-CHANGE-ME";
 
 async function cloudGet(){
   try{
@@ -316,10 +480,13 @@ async function loadState(){
 }
 
 async function saveState(){
-  // keep photos only on the 40 most recent entries so storage stays lean
-  const recent=[...S.timesheets].sort((a,b)=>b.start-a.start).slice(40);
+  // keep storage lean: photos only on the 24 most recent timesheet entries,
+  // newest 24 progress photos, and a hard size guard under the API limit
+  const recent=[...S.timesheets].sort((a,b)=>b.start-a.start).slice(24);
   recent.forEach(t=>{ if(t.photo) delete t.photo; });
-  const payload = JSON.stringify(S);
+  S.photos=[...(S.photos||[])].sort((a,b)=>b.ts-a.ts).slice(0,24);
+  let payload = JSON.stringify(S);
+  while(payload.length>3400000 && S.photos.length){ S.photos.pop(); payload=JSON.stringify(S); }
   memStore["tc:data:v2"]=payload; // always keep an in-session copy
   lsSet(payload);                 // and a per-device backup where allowed
   if(await cloudSet(payload)){ storageMode="cloud"; lastPayload=payload; return; }
@@ -350,6 +517,7 @@ function seed(){
     quotes:[],
     timesheets:[],
     sessions:[],
+    photos:[],
     notifications:[],
     counters:{quote:1001, job:1001},
     company:{name:"Toth Construction Limited",tag:"New Builds · Renovations · Bathrooms · Decks & Retaining Walls",addr:"Auckland, New Zealand",email:"office@tothconstruction.co.nz",phone:"09 000 0000",gstNo:"123-456-789",director:"Istvan Toth",directorTitle:"Managing Director · Licensed Building Practitioner",pin:"8684"}
@@ -360,6 +528,8 @@ function seed(){
 const $app = document.getElementById("app");
 function workerById(id){ return S.workers.find(w=>w.id===id); }
 function jobById(id){ return S.jobs.find(j=>j.id===id); }
+function jobLabel(id){ if(!id) return "General — no job"; const j=jobById(id); return j?j.title:"(deleted job)"; }
+function jobColour(id){ const j=id?jobById(id):null; return j?(j.colour||"#29ABE2"):"#8E9196"; }
 function sessionFor(wid){ return S.sessions.find(s=>s.workerId===wid); }
 function jobStatusChip(st){
   const m={active:["green","Active"],scheduled:["blue","Scheduled"],quoted:["amber","Quoted"],complete:["grey","Complete"]};
@@ -423,7 +593,7 @@ function renderGate(){
       <span class="gb-icon">${icons.clock.replace('currentColor','#fff')}</span>
       <span><span class="gb-t">Employee</span><div class="gb-d">Sign on, sign off & your schedule</div></span>
     </button>
-    <div class="gate-foot">Auckland · New Zealand</div>
+    <div class="gate-foot">Auckland · New Zealand<br><span style="font-weight:400;letter-spacing:.08em">Job Board v${APP_VERSION}</span></div>
   </div></div>`;
 }
 function enterPortal(p){
@@ -486,6 +656,7 @@ async function savePin(){
 
 /* ================= EMPLOYER PORTAL ================= */
 function renderEmployer(){
+  loadWeather();
   const tabs=[["dash","Dashboard",icons.dash],["quotes","Quotes",icons.quote],["jobs","Jobs",icons.jobs],["cal","Calendar",icons.cal]];
   let body="";
   if(route.tab==="dash") body=empDash();
@@ -496,13 +667,14 @@ function renderEmployer(){
     <nav class="bnav">${tabs.map(t=>`<button class="${route.tab===t[0]?'on':''}" onclick="goTab('${t[0]}')" aria-label="${t[1]}">${t[2]}${t[1]}</button>`).join("")}</nav>
   </div>`;
   if(route.tab==="dash") startDashTick();
+  animateStats();
 }
 function goTab(t){ route.tab=t; calSel=null; render(); }
 
 /* ---- Dashboard ---- */
 function liveMinutes(sess){ return (Date.now()-sess.start)/60000; }
 function empDash(){
-  const onsite = S.sessions.map(s=>({s, w:workerById(s.workerId), j:jobById(s.jobId)})).filter(x=>x.w&&x.j);
+  const onsite = S.sessions.map(s=>({s, w:workerById(s.workerId)})).filter(x=>x.w);
   const today = todayISO();
   const doneToday = S.timesheets.filter(t=>t.date===today && !t.pending && !t.declined).reduce((a,t)=>a+t.minutes,0);
   const liveMin = S.sessions.reduce((a,s)=>a+liveMinutes(s),0);
@@ -510,11 +682,18 @@ function empDash(){
   const pending = S.timesheets.filter(t=>t.pending).sort((a,b)=>b.start-a.start);
   const notifs = [...S.notifications].sort((a,b)=>b.ts-a.ts).slice(0,6);
   return `
+    <div class="muted" style="margin:0 2px 10px;font-weight:600">${new Date().toLocaleDateString("en-NZ",{weekday:"long",day:"numeric",month:"long",year:"numeric"})}</div>
     <div class="stat-grid">
       <div class="stat"><div class="s-n">${onsite.length}</div><div class="s-l">On site now</div></div>
       <div class="stat"><div class="s-n" id="hrsToday">${((doneToday+liveMin)/60).toFixed(1)}</div><div class="s-l">Hours today</div></div>
       <div class="stat"><div class="s-n">${activeJobs}</div><div class="s-l">Live jobs</div></div>
     </div>
+    ${WX?`<div class="eyebrow">${roofSVG(15,"var(--blue)")} Auckland forecast</div>
+    <div class="wx-strip">${WX.time.map((t,i)=>{
+      const w=wxFor(t); if(!w) return "";
+      const d=i===0?"Today":new Date(t+"T00:00:00").toLocaleDateString("en-NZ",{weekday:"short"});
+      return `<div class="wx-day"><div class="w-d">${d}</div><div class="w-e">${w.e}</div><div class="w-t">${w.hi}°<small>/${w.lo}°</small></div>${w.rain>=20?`<div class="w-r">💧${w.rain}%</div>`:""}</div>`;
+    }).join("")}</div>`:""}
     ${pending.length?`
     <div class="eyebrow">${roofSVG(15,"var(--amber)")} Time approvals <span class="count">${pending.length} waiting</span></div>
     ${pending.map(t=>{
@@ -522,7 +701,7 @@ function empDash(){
       return `<div class="card" style="border-color:var(--amber)">
         <div class="row">
           <div class="avatar ${t.photo?'photo':''}" style="${t.photo?`background-image:url(${t.photo})`:''}">${t.photo?'':initials(w?w.name:"?")}</div>
-          <div class="grow"><b>${esc(w?w.name:"Unknown")}</b><div class="muted">${esc(j?j.title:"(deleted job)")}</div>
+          <div class="grow"><b>${esc(w?w.name:"Unknown")}</b><div class="muted">${esc(jobLabel(t.jobId))}</div>
           <div class="muted">${fmtDateLong(t.date)} · ${fmtTime(t.start)}–${fmtTime(t.end)} ${t.manual?'· manual entry':'· backdated sign-on'}</div></div>
           <b style="font-family:var(--disp);font-size:20px">${durText(t.minutes)}</b>
         </div>
@@ -535,16 +714,24 @@ function empDash(){
     ${onsite.length ? onsite.map(x=>`
       <div class="card row">
         <div class="avatar lg ${x.s.photo?'photo':''}" style="${x.s.photo?`background-image:url(${x.s.photo})`:''}" ${x.s.photo?`onclick="viewFitPhoto('${x.w.id}')" role="button" aria-label="View fit-for-work photo" tabindex="0"`:''}>${x.s.photo?'':initials(x.w.name)}</div>
-        <div class="grow"><b>${esc(x.w.name)}</b><div class="muted">${esc(x.j.title)}</div>${x.s.photo?'<div class="muted" style="font-size:11.5px;color:var(--blue-dark)">Tap photo to enlarge</div>':''}</div>
+        <div class="grow"><b>${esc(x.w.name)}</b><div class="muted">${esc(jobLabel(x.s.jobId))}</div>${x.s.photo?'<div class="muted" style="font-size:11.5px;color:var(--blue-dark)">Tap photo to enlarge</div>':''}</div>
         <div style="text-align:right"><div class="row" style="gap:6px;justify-content:flex-end"><span class="pulse"></span><b class="live-dur" data-start="${x.s.start}">${durText(liveMinutes(x.s))}</b></div>
         <div class="muted">since ${fmtTime(x.s.start)}${x.s.backdated?' ⚠':''}</div></div>
       </div>`).join("") :
       `<div class="empty">${icons.team.replace('currentColor','#9EA1A8').replace('<svg','<svg width="44" height="44"')}<div class="e-t">Nobody signed on</div>Crew sign-ons will appear here in real time.</div>`}
+    ${(()=>{ const ph=[...(S.photos||[])].sort((a,b)=>b.ts-a.ts).slice(0,8);
+      return ph.length?`<div class="eyebrow">${roofSVG(15,"var(--blue)")} Site photos <span class="count">latest ${ph.length}</span></div>
+      <div class="pstrip">${ph.map(p=>`<img src="${p.img}" alt="Progress photo" onclick="viewProgress('${p.id}')">`).join("")}</div>`:""; })()}
     <div class="eyebrow">${roofSVG(15,"var(--blue)")} Activity</div>
     <div class="card">${notifs.length ? notifs.map(n=>`
       <div class="notif"><span class="n-dot"></span><div>${esc(n.text)}<time>${new Date(n.ts).toLocaleDateString("en-NZ",{day:"numeric",month:"short"})} · ${fmtTime(n.ts)}</time></div></div>`).join("") : `<div class="muted">No activity yet.</div>`}
     </div>
-    <div class="eyebrow">${roofSVG(15,"var(--blue)")} Security</div>
+    <div class="eyebrow">${roofSVG(15,"var(--blue)")} Office tools</div>
+    <button class="card row" style="width:100%;text-align:left" onclick="exportTimesheetsCSV()">
+      <div class="avatar" style="background:var(--charcoal)">${icons.sheet.replace('currentColor','#fff').replace('<svg','<svg width="20" height="20"')}</div>
+      <div class="grow"><b>Export timesheets (CSV)</b><div class="muted">Approved hours by worker & job — opens in Excel for payroll</div></div>
+      <span class="muted" style="font-size:18px">›</span>
+    </button>
     <button class="card row" style="width:100%;text-align:left" onclick="openPinChange()">
       <div class="avatar" style="background:var(--blue)">🔒</div>
       <div class="grow"><b>Employer access code</b><div class="muted">Change the 4-digit code for this portal</div></div>
@@ -560,7 +747,7 @@ function viewFitPhoto(wid){
     <div class="card">
       <div class="row"><div class="grow"><b style="font-size:16px">${esc(w.name)}</b><div class="muted">${esc(w.role)}</div></div>
       <span class="row" style="gap:6px"><span class="pulse"></span><span class="chip green">On site</span></span></div>
-      <div class="muted" style="margin-top:8px">${esc(j?j.title:"Job")} · signed on ${fmtTime(sess.start)}${sess.backdated?' <span class="chip amber">Backdated</span>':''}</div>
+      <div class="muted" style="margin-top:8px">${esc(jobLabel(sess.jobId))} · signed on ${fmtTime(sess.start)}${sess.backdated?' <span class="chip amber">Backdated</span>':''}</div>
       <div class="muted" style="margin-top:4px">Declared fit for work at sign-on.</div>
     </div>
     <div class="fab-space"></div>`);
@@ -570,16 +757,37 @@ async function approveEntry(id){
   const t=S.timesheets.find(x=>x.id===id); if(!t) return;
   t.pending=false;
   const w=workerById(t.workerId), j=jobById(t.jobId);
-  S.notifications.push({id:uid(),ts:Date.now(),text:`Time approved — ${durText(t.minutes)} on ${j?j.title:"job"}`,workerIds:[t.workerId]});
+  S.notifications.push({id:uid(),ts:Date.now(),text:`Time approved — ${durText(t.minutes)} on ${jobLabel(t.jobId)}`,workerIds:[t.workerId]});
   await saveState(); render(); toast(`Approved ${w?w.name.split(" ")[0]:""}'s ${durText(t.minutes)}`);
 }
-async function declineEntry(id){
+function declineEntry(id){
   const t=S.timesheets.find(x=>x.id===id); if(!t) return;
-  if(!confirm("Decline this time entry? The worker will be notified.")) return;
-  t.pending=false; t.declined=true;
-  const j=jobById(t.jobId);
-  S.notifications.push({id:uid(),ts:Date.now(),text:`Time entry declined — ${durText(t.minutes)} on ${j?j.title:"job"}, ${fmtDate(t.date)}. See the office if this is wrong.`,workerIds:[t.workerId]});
-  await saveState(); render(); toast("Entry declined — worker notified");
+  askConfirm("Decline time entry",`${durText(t.minutes)} will be excluded from totals and the worker notified.`,"Decline", async()=>{
+    t.pending=false; t.declined=true;
+    const j=jobById(t.jobId);
+    S.notifications.push({id:uid(),ts:Date.now(),text:`Time entry declined — ${durText(t.minutes)} on ${jobLabel(t.jobId)}, ${fmtDate(t.date)}. See the office if this is wrong.`,workerIds:[t.workerId]});
+    await saveState(); render(); toast("Entry declined — worker notified");
+  });
+}
+
+function exportTimesheetsCSV(){
+  const rows=[["Date","Worker","Role","Job","Job code","Start","Finish","Hours","Status"]];
+  const q=v=>`"${String(v==null?"":v).replace(/"/g,'""')}"`;
+  [...S.timesheets].sort((a,b)=>a.start-b.start).forEach(t=>{
+    const w=workerById(t.workerId), j=jobById(t.jobId);
+    rows.push([t.date, w?w.name:"(removed)", w?w.role:"", jobLabel(t.jobId), j?j.code:"",
+      fmtTime(t.start), fmtTime(t.end), (t.minutes/60).toFixed(2),
+      t.declined?"Declined":t.pending?"Pending approval":"Approved"]);
+  });
+  if(rows.length===1){ toast("No timesheet entries to export yet"); return; }
+  const csv=rows.map(r=>r.map(q).join(",")).join("\r\n");
+  const blob=new Blob(["\uFEFF"+csv],{type:"text/csv;charset=utf-8"});
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);
+  a.download=`Toth Timesheets ${todayISO()}.csv`;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(a.href),4000);
+  toast(`Exported ${rows.length-1} entries`);
 }
 
 function startDashTick(){
@@ -613,6 +821,7 @@ function empJobs(){
           <span>${icons.cal.replace('<svg','<svg width="14" height="14" style="vertical-align:-2px"')} ${fmtDate(j.start)} → ${fmtDate(j.end)}</span>
           <span style="margin-left:auto">${crew.length} crew · ${stepsDone}/${j.steps.length} steps</span>
         </div>
+        ${j.steps.length?`<div class="jprog"><i style="width:${Math.round(stepsDone/j.steps.length*100)}%;background:${j.colour||'var(--blue)'}"></i></div>`:""}
       </div>`;}).join("") : `<div class="empty">${icons.jobs.replace('currentColor','#9EA1A8').replace('<svg','<svg width="44" height="44"')}<div class="e-t">No jobs yet</div>Create your first job above — crew can be allocated as you go.</div>`}`;
 }
 
@@ -622,15 +831,44 @@ function openJobDetail(id){
   const hrs=S.timesheets.filter(t=>t.jobId===id).reduce((a,t)=>a+t.minutes,0);
   sheet(`${esc(j.code)}`, `
     <div class="card">
-      <div class="row" style="align-items:flex-start"><div class="grow"><b style="font-size:17px">${esc(j.title)}</b>
-      <div class="muted">${esc(j.client)}<br>${esc(j.site)}</div></div>${jobStatusChip(j.status)}</div>
-      <div class="muted" style="margin-top:8px">${j.service?`<span class="chip grey" style="margin-right:6px">${esc(j.service)}</span>`:""}${fmtDateLong(j.start)} → ${fmtDateLong(j.end)} · ${durText(hrs)} logged</div>
+      <div class="row" style="margin-bottom:10px"><span class="muted grow" style="font-size:12px;font-weight:700;letter-spacing:.06em">${esc(j.code)} · ${durText(hrs)} logged</span>${jobStatusChip(j.status)}</div>
+      <div class="field" style="margin-bottom:8px"><label>Job title</label><input value="${esc(j.title)}" onchange="setJobField('${j.id}','title',this.value)"></div>
+      <div class="f2">
+        <div class="field" style="margin-bottom:8px"><label>Client</label><input value="${esc(j.client)}" onchange="setJobField('${j.id}','client',this.value)"></div>
+        <div class="field" style="margin-bottom:8px"><label>Service</label><select onchange="setJobField('${j.id}','service',this.value)">${SERVICES.map(s=>`<option ${j.service===s?'selected':''}>${s}</option>`).join("")}</select></div>
+      </div>
+      <div class="field" style="margin-bottom:0"><label>Site address</label><input value="${esc(j.site)}" placeholder="Start typing an NZ address…" autocomplete="off" oninput="addrLookup(this)" onblur="setTimeout(closeAddrList,180)" onchange="setJobField('${j.id}','site',this.value)"></div>
     </div>
-    <div class="eyebrow">Steps</div>
-    <div class="card">${j.steps.length? j.steps.map(s=>`
+    <div class="eyebrow">Schedule</div>
+    <div class="card">
+      <div class="f2">
+        <div class="field" style="margin-bottom:8px"><label>Start</label><input type="date" value="${j.start||''}" onchange="setJobDate('${j.id}','start',this.value)"></div>
+        <div class="field" style="margin-bottom:8px"><label>Finish</label><input type="date" value="${j.end||''}" onchange="setJobDate('${j.id}','end',this.value)"></div>
+      </div>
+      <div class="muted" style="font-size:12px;margin:2px 0 8px">Shift the whole job — steps move with it and crew are notified:</div>
+      <div class="row" style="gap:6px">
+        <button class="btn ghost sm" style="flex:1" onclick="shiftJob('${j.id}',-7)">−1 wk</button>
+        <button class="btn ghost sm" style="flex:1" onclick="shiftJob('${j.id}',-1)">−1 day</button>
+        <button class="btn ghost sm" style="flex:1" onclick="shiftJob('${j.id}',1)">+1 day</button>
+        <button class="btn ghost sm" style="flex:1" onclick="shiftJob('${j.id}',7)">+1 wk</button>
+      </div>
+    </div>
+    <div class="eyebrow">Steps <span class="count">works while active</span></div>
+    <div class="card">
+      ${j.steps.length? j.steps.map(s=>`
       <div class="step-line"><button class="step-tick ${s.done?'done':''}" onclick="toggleStep('${j.id}','${s.id}')" aria-label="toggle step">${s.done?'✓':''}</button>
-      <span class="grow" style="${s.done?'text-decoration:line-through;color:var(--muted)':''}">${esc(s.name)}</span><span class="muted">${fmtDate(s.date)}</span></div>`).join("") : '<div class="muted">No steps added.</div>'}
+      <input class="step-name" value="${esc(s.name)}" style="${s.done?'text-decoration:line-through;color:var(--muted)':''}" onchange="setStepName('${j.id}','${s.id}',this.value)" aria-label="Step name">
+      <input type="date" class="step-date" value="${s.date||''}" onchange="setStepDate('${j.id}','${s.id}',this.value)" aria-label="Step date">
+      <button class="step-x" onclick="removeStep('${j.id}','${s.id}')" aria-label="Remove step">✕</button></div>`).join("") : '<div class="muted">No steps yet — add the first one below.</div>'}
+      <div class="row" style="margin-top:12px;gap:6px">
+        <input id="jd-stepname" placeholder="New step" style="flex:1.3;padding:10px;border:1.5px solid var(--line);border-radius:10px;min-width:0">
+        <input type="date" id="jd-stepdate" value="${todayISO()}" style="flex:1;padding:10px;border:1.5px solid var(--line);border-radius:10px;min-width:0">
+        <button class="btn dark sm" onclick="addStepToJob('${j.id}')">Add</button>
+      </div>
     </div>
+    ${(()=>{ const ph=[...(S.photos||[])].filter(p=>p.jobId===j.id).sort((a,b)=>b.ts-a.ts);
+      return ph.length?`<div class="eyebrow">Progress photos <span class="count">${ph.length}</span></div>
+      <div class="pgrid" style="margin-bottom:10px">${ph.map(p=>`<img class="pthumb" src="${p.img}" alt="Progress photo" onclick="viewProgress('${p.id}')">`).join("")}</div>`:""; })()}
     <div class="eyebrow">Crew allocated</div>
     ${S.workers.map(w=>{
       const on=j.assigned.includes(w.id);
@@ -643,6 +881,60 @@ function openJobDetail(id){
     </select></div>
     <button class="btn danger" onclick="deleteJob('${j.id}')">Delete job</button>
     <div class="fab-space"></div>`);
+}
+function addDays(iso, n){ if(!iso) return iso; const d=new Date(iso+"T00:00:00"); d.setDate(d.getDate()+n); return todayISO(d); }
+async function setJobDate(jid,k,v){
+  const j=jobById(jid); if(!j||!v) return;
+  j[k]=v;
+  if(j.start && j.end && j.end<j.start){ (k==="start")? j.end=j.start : j.start=j.end; }
+  if(j.assigned.length) S.notifications.push({id:uid(),ts:Date.now(),text:`${j.title} rescheduled — ${fmtDate(j.start)} → ${fmtDate(j.end)}`,workerIds:[...j.assigned]});
+  await saveState(); render(); openJobDetail(jid); toast("Schedule updated"+(j.assigned.length?" — crew notified":""));
+}
+async function shiftJob(jid,n){
+  const j=jobById(jid); if(!j) return;
+  j.start=addDays(j.start,n); j.end=addDays(j.end,n);
+  j.steps.forEach(s=>{ s.date=addDays(s.date,n); });
+  if(j.assigned.length) S.notifications.push({id:uid(),ts:Date.now(),text:`${j.title} moved ${Math.abs(n)} day${Math.abs(n)===1?"":"s"} ${n>0?"later":"earlier"} — now ${fmtDate(j.start)} → ${fmtDate(j.end)}`,workerIds:[...j.assigned]});
+  await saveState(); render(); openJobDetail(jid);
+  toast(`Moved ${Math.abs(n)} day${Math.abs(n)===1?"":"s"} ${n>0?"later":"earlier"} — steps moved too`);
+}
+async function setJobField(jid,k,v){
+  const j=jobById(jid); if(!j) return;
+  v=String(v).trim();
+  if(k==="title" && !v){ toast("Job needs a title"); return; }
+  j[k]=v || "—";
+  await saveState(); toast("Saved");
+}
+async function setStepName(jid,sid,v){
+  const j=jobById(jid); if(!j) return;
+  const s=j.steps.find(x=>x.id===sid); if(!s) return;
+  v=String(v).trim();
+  if(!v){ toast("Step needs a name"); return; }
+  s.name=v;
+  await saveState(); toast("Step renamed");
+}
+async function addStepToJob(jid){
+  const j=jobById(jid); if(!j) return;
+  const name=document.getElementById("jd-stepname").value.trim();
+  const date=document.getElementById("jd-stepdate").value;
+  if(!name){ toast("Enter a step name"); return; }
+  j.steps.push({id:uid(),name,date,done:false});
+  j.steps.sort((a,b)=>(a.date||"").localeCompare(b.date||""));
+  await saveState(); render(); openJobDetail(jid); toast("Step added");
+}
+function removeStep(jid,sid){
+  const j=jobById(jid); if(!j) return;
+  const s=j.steps.find(x=>x.id===sid); if(!s) return;
+  askConfirm("Remove step",`"${esc(s.name)}" will be removed from ${esc(j.title)}.`,"Remove", async()=>{
+    j.steps=j.steps.filter(x=>x.id!==sid);
+    await saveState(); render(); openJobDetail(jid); toast("Step removed");
+  });
+}
+async function setStepDate(jid,sid,v){
+  const j=jobById(jid); if(!j||!v) return;
+  const s=j.steps.find(x=>x.id===sid); if(!s) return;
+  s.date=v;
+  await saveState(); toast("Step date updated");
 }
 async function toggleStep(jid,sid){
   const j=jobById(jid); const s=j.steps.find(x=>x.id===sid); s.done=!s.done;
@@ -661,9 +953,10 @@ async function toggleAssign(jid,wid,on){
   await saveState(); openJobDetail(jid);
 }
 async function setJobStatus(jid,st){ jobById(jid).status=st; await saveState(); toast("Status updated"); }
-async function deleteJob(jid){
-  if(!confirm("Delete this job? Timesheet history is kept.")) return;
-  S.jobs=S.jobs.filter(j=>j.id!==jid); await saveState(); closeSheet(); render(); toast("Job deleted");
+function deleteJob(jid){
+  askConfirm("Delete job","This removes the job and its steps. Timesheet history is kept.","Delete", async()=>{
+    S.jobs=S.jobs.filter(j=>j.id!==jid); await saveState(); closeSheet(); render(); toast("Job deleted");
+  });
 }
 
 function openJobForm(){
@@ -672,7 +965,7 @@ function openJobForm(){
     <div class="field"><label>Job title</label><input id="jf-title" placeholder="e.g. Remuera Bathroom Reno"></div>
     <div class="field"><label>Client</label><input id="jf-client" placeholder="Client name"></div>
     <div class="field"><label>Service type</label><select id="jf-service">${SERVICES.map(s=>`<option>${s}</option>`).join("")}</select></div>
-    <div class="field"><label>Site address</label><input id="jf-site" placeholder="Street, suburb"></div>
+    <div class="field"><label>Site address</label><input id="jf-site" placeholder="Start typing an NZ address…" autocomplete="off" oninput="addrLookup(this)" onblur="setTimeout(closeAddrList,180)"></div>
     <div class="f2">
       <div class="field"><label>Start</label><input type="date" id="jf-start" value="${todayISO()}"></div>
       <div class="field"><label>Finish</label><input type="date" id="jf-end" value="${todayISO()}"></div>
@@ -740,7 +1033,9 @@ function empCal(){
     if(!c.iso) return `<div class="cal-cell dim"><span class="cd">${c.d}</span></div>`;
     const bars=S.jobs.filter(j=>j.start&&j.end&&c.iso>=j.start&&c.iso<=j.end);
     const steps=S.jobs.flatMap(j=>j.steps.filter(s=>s.date===c.iso));
+    const w=wxFor(c.iso);
     return `<div class="cal-cell ${c.iso===today?'today':''} ${calSel===c.iso?'sel':''}" onclick="selCalDay('${c.iso}')">
+      ${w?`<span class="cal-wx">${w.e}</span>`:""}
       <span class="cd">${c.d}</span>
       <div class="cal-dots">${bars.slice(0,3).map(j=>`<span class="cal-bar" style="background:${j.colour||'var(--blue)'}"></span>`).join("")}${steps.slice(0,3).map(()=>'<span class="cal-step"></span>').join("")}</div>
     </div>`;}).join("");
@@ -755,6 +1050,9 @@ function empCal(){
     </div>
     <div class="cal-grid">${["Mo","Tu","We","Th","Fr","Sa","Su"].map(d=>`<div class="cal-dow">${d}</div>`).join("")}${grid}</div>
     <div class="eyebrow">${roofSVG(15,"var(--blue)")} ${fmtDateLong(selIso)}</div>
+    ${(()=>{ const w=wxFor(selIso);
+      return w?`<div class="card row"><span style="font-size:26px">${w.e}</span>
+      <div class="grow"><b>${w.hi}° / ${w.lo}° — Auckland</b><div class="muted">${w.rain}% chance of rain${w.rain>=60?" — plan inside work":""}</div></div></div>`:""; })()}
     ${dayJobs.length||daySteps.length ? `
       ${dayJobs.map(j=>`<div class="card row" onclick="openJobDetail('${j.id}')" role="button">
         <span style="width:5px;align-self:stretch;border-radius:4px;background:${j.colour||'var(--blue)'}"></span>
@@ -774,11 +1072,11 @@ function empQuotes(){
     <div class="dropzone" id="dz" style="margin-top:10px"
       ondragover="event.preventDefault();this.classList.add('hot')"
       ondragleave="this.classList.remove('hot')"
-      ondrop="event.preventDefault();this.classList.remove('hot');importXlsx(event.dataTransfer.files[0])"
+      ondrop="event.preventDefault();this.classList.remove('hot');importFile(event.dataTransfer.files[0])"
       onclick="document.getElementById('xlsxFile').click()">
-      ⇪ Drop your Excel quoting sheet here
+      ⇪ Drop your Excel quoting sheet or a PDF quote here
       <div class="dz-sub">or tap to browse — imports client, items & pricing straight into a quote</div>
-      <input type="file" id="xlsxFile" accept=".xlsx,.xls" style="display:none" onchange="importXlsx(this.files[0]);this.value=''">
+      <input type="file" id="xlsxFile" accept=".xlsx,.xls,.pdf" style="display:none" onchange="importFile(this.files[0]);this.value=''">
     </div>
     <div class="eyebrow">${roofSVG(15,"var(--blue)")} Quotes <span class="count">${qs.length}</span></div>
     ${qs.length? qs.map(q=>{
@@ -813,7 +1111,7 @@ function drawQuoteSheet(){
       <div class="field"><label>Contact person</label><input value="${esc(editQ.contact)}" onchange="editQ.contact=this.value"></div>
     </div>
     <div class="field"><label>Client email</label><input type="email" value="${esc(editQ.email)}" onchange="editQ.email=this.value"></div>
-    <div class="field"><label>Site address</label><input value="${esc(editQ.siteAddress)}" onchange="editQ.siteAddress=this.value"></div>
+    <div class="field"><label>Site address</label><input value="${esc(editQ.siteAddress)}" placeholder="Start typing an NZ address…" autocomplete="off" oninput="addrLookup(this)" onblur="setTimeout(closeAddrList,180)" onchange="editQ.siteAddress=this.value"></div>
     <div class="f2">
       <div class="field"><label>Valid for (days)</label><input type="number" value="${editQ.validDays}" onchange="editQ.validDays=Number(this.value)||30"></div>
       <div class="field"><label>Status</label><select onchange="editQ.status=this.value">
@@ -924,9 +1222,123 @@ async function saveQuote(pdf){
   await saveState();
   if(pdf){ makeQuotePDF(editQ); } else { closeSheet(); render(); toast("Quote saved"); }
 }
-async function deleteQuote(){
-  if(!confirm("Delete this quote?")) return;
-  S.quotes=S.quotes.filter(q=>q.id!==editQ.id); await saveState(); closeSheet(); render(); toast("Quote deleted");
+function deleteQuote(){
+  askConfirm("Delete quote",`${esc(editQ.number)} will be permanently removed.`,"Delete", async()=>{
+    S.quotes=S.quotes.filter(q=>q.id!==editQ.id); await saveState(); closeSheet(); render(); toast("Quote deleted");
+  });
+}
+
+/* ---- import router ---- */
+function importFile(file){
+  if(!file) return;
+  if(/\.pdf$/i.test(file.name)) importPdf(file);
+  else if(/\.xlsx?$/i.test(file.name)) importXlsx(file);
+  else toast("Drop an Excel (.xlsx) or PDF quote");
+}
+
+/* ---- PDF quote import (pdf.js — loaded on demand) ---- */
+let pdfjsReady=null;
+function ensurePdfJs(){
+  if(window.pdfjsLib) return Promise.resolve();
+  if(pdfjsReady) return pdfjsReady;
+  pdfjsReady=new Promise((res,rej)=>{
+    const s=document.createElement("script");
+    s.src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js";
+    s.onload=()=>{ window.pdfjsLib.GlobalWorkerOptions.workerSrc="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js"; res(); };
+    s.onerror=()=>rej(new Error("pdf.js failed to load"));
+    document.head.appendChild(s);
+  });
+  return pdfjsReady;
+}
+async function importPdf(file){
+  toast("Reading PDF…");
+  try{
+    await ensurePdfJs();
+    const buf=await file.arrayBuffer();
+    const pdf=await window.pdfjsLib.getDocument({data:buf}).promise;
+    const lines=[];
+    for(let p=1;p<=pdf.numPages;p++){
+      const page=await pdf.getPage(p);
+      const tc=await page.getTextContent();
+      const rows={};
+      tc.items.forEach(it=>{
+        if(!it.str || !it.str.trim()) return;
+        const y=Math.round(it.transform[5]/3)*3; // group items on the same baseline
+        (rows[y]=rows[y]||[]).push({x:it.transform[4], s:it.str});
+      });
+      Object.keys(rows).map(Number).sort((a,b)=>b-a).forEach(y=>{
+        const line=rows[y].sort((a,b)=>a.x-b.x).map(i=>i.s).join(" ").replace(/\s+/g," ").trim();
+        if(line) lines.push(line);
+      });
+    }
+    const q=parsePdfQuote(lines);
+    if(!q.items.length){
+      toast("Couldn't find line items — PDF import works best with Toth quote PDFs; try the Excel sheet");
+      return;
+    }
+    editQ=q;
+    drawQuoteSheet();
+    toast(`Imported ${q.items.length} line${q.items.length===1?"":"s"} from PDF — review & save`);
+  }catch(err){
+    console.error(err);
+    toast("Couldn't read that PDF — scanned images can't be parsed, try the Excel sheet");
+  }
+}
+function num(s){ return Number(String(s).replace(/[$,]/g,""))||0; }
+function parsePdfQuote(lines){
+  const q={id:null,number:"TC-Q-"+S.counters.quote,date:todayISO(),client:"",contact:"",email:"",siteAddress:"",jobTitle:"",validDays:30,status:"draft",notes:"",items:[]};
+  const text=lines.join("\n");
+  const numMatch=text.match(/TC-Q-\d+/i);
+  if(numMatch) q.number=numMatch[0].toUpperCase();
+  const emails=text.match(/[\w.+-]+@[\w-]+(?:\.[\w-]+)+/g)||[];
+  const clientEmail=emails.find(e=>!/tothconstruction/i.test(e));
+  if(clientEmail) q.email=clientEmail;
+  const valid=text.match(/Valid for\s+(\d+)\s*days?/i);
+  if(valid) q.validDays=Number(valid[1])||30;
+  lines.forEach((line,i)=>{
+    let m;
+    if((m=line.match(/^Attn:\s*(.+?)(?:\s+(?:Project|Date|Valid for|GST No)\b.*)?$/i))) q.contact=q.contact||m[1].trim();
+    if((m=line.match(/\bProject\s+(.+?)(?=\s+(?:Valid for|GST No\.?|Date)\b|$)/i))) q.jobTitle=q.jobTitle||m[1].trim();
+    if((m=line.match(/\bSite:\s*(.+?)(?=\s+(?:Valid for|GST No\.?|Project|Date)\b|$)/i))) q.siteAddress=q.siteAddress||m[1].trim();
+    if(/QUOTE FOR/i.test(line) && lines[i+1]){
+      const c=lines[i+1].split(/\s+(?:Date|Attn:)\b/i)[0].trim();
+      if(c && !/^(Attn|Site|Project)/i.test(c)) q.client=q.client||c;
+    }
+  });
+  // items: between the table header and Subtotal
+  const start=lines.findIndex(l=>/DESCRIPTION\s+CATEGORY\s+QTY\s+RATE\s+AMOUNT/i.test(l));
+  const itemRe=/^(.+?)\s+(Labour|Materials|Plant|Subcontract|Other)\s+([\d.,]+)\s*([A-Za-z0-9²³]*)\s+([\d.,]+)\s+\$?([\d.,]+\.\d{2})$/;
+  if(start>=0){
+    for(let i=start+1;i<lines.length;i++){
+      const line=lines[i];
+      if(/^(Subtotal|GST\b|TOTAL)/i.test(line)) break;
+      const m=line.match(itemRe);
+      if(m){
+        q.items.push({desc:m[1].trim(),category:m[2],qty:num(m[3]),unit:m[4]||"",rate:num(m[5])});
+      } else if(q.items.length && !/NOTES|Prepared by|SUMMARY/i.test(line)){
+        q.items[q.items.length-1].desc+=" "+line; // wrapped description continuation
+      }
+    }
+  } else {
+    // generic fallback: "description  qty  rate  amount" lines from other PDF layouts
+    const genRe=/^(.+?)\s+([\d.,]+)\s+\$?([\d.,]+\.\d{2})\s+\$?([\d.,]+\.\d{2})$/;
+    lines.forEach(line=>{
+      if(/^(Subtotal|GST\b|TOTAL|Quote|Invoice)/i.test(line)) return;
+      const m=line.match(genRe);
+      if(m && m[1].length>3) q.items.push({desc:m[1].trim(),category:"Other",qty:num(m[2]),unit:"",rate:num(m[3])});
+    });
+  }
+  // notes block
+  const nStart=lines.findIndex(l=>/NOTES\s*&\s*EXCLUSIONS/i.test(l));
+  if(nStart>=0){
+    const chunk=[];
+    for(let i=nStart+1;i<lines.length;i++){
+      if(/^Prepared by|^Toth Construction Limited ·/i.test(lines[i])) break;
+      chunk.push(lines[i]);
+    }
+    q.notes=chunk.join(" ").trim();
+  }
+  return q;
 }
 
 /* ---- Excel quoting sheet import ---- */
@@ -1106,6 +1518,7 @@ function renderEmployee(){
     <nav class="bnav">${tabs.map(t=>`<button class="${route.tab===t[0]?'on':''}" onclick="goTab('${t[0]}')" aria-label="${t[1]}">${t[2]}${t[1]}</button>`).join("")}</nav>
   </div>`;
   if(route.tab==="sign" && sessionFor(route.workerId)) startSignTick();
+  animateStats();
 }
 function backToWho(){ closeSheet(); route.workerId=null; route.tab="who"; render(); }
 function renderWho(){
@@ -1120,8 +1533,128 @@ function renderWho(){
         ${on?'<span class="row" style="gap:6px"><span class="pulse"></span><span class="chip green">On site</span></span>':""}
       </button>`;}).join("") : `<div class="empty">${icons.team.replace('currentColor','#9EA1A8').replace('<svg','<svg width="44" height="44"')}<div class="e-t">No crew yet</div>Add your first worker below to get started.</div>`}
     <button class="btn ghost" style="margin-top:6px" onclick="openAddWorker()">+ Add worker</button>
+    ${S.workers.length?`<button class="btn ghost" style="margin-top:8px;color:var(--danger)" onclick="openRemoveWorker()">− Remove worker <span style="font-weight:400;color:var(--muted)">(employer code required)</span></button>`:""}
   </div></div>`;
 }
+/* ---- remove worker (employer code required) ---- */
+function openRemoveWorker(){
+  sheet("Remove worker", `
+    <div class="muted" style="margin-bottom:12px">Office use only. Enter the employer access code to manage the crew list.</div>
+    <div class="field"><label>Employer access code</label>
+      <input id="rw-pin" type="password" inputmode="numeric" maxlength="4" placeholder="••••" autocomplete="off"
+        style="text-align:center;font-size:22px;letter-spacing:10px">
+    </div>
+    <button class="btn dark" onclick="verifyRemovePin()">Unlock crew list</button>
+    <div class="fab-space"></div>`);
+  setTimeout(()=>{ const i=document.getElementById("rw-pin"); if(i) i.focus(); },100);
+}
+function verifyRemovePin(){
+  const v=document.getElementById("rw-pin").value.trim();
+  if(v!==companyPin()){
+    document.getElementById("rw-pin").value="";
+    toast("Wrong code — see the office");
+    return;
+  }
+  drawRemoveList();
+}
+function drawRemoveList(){
+  if(!S.workers.length){ closeSheet(); render(); return; }
+  sheet("Remove worker", `
+    <div class="muted" style="margin-bottom:12px">Removing a worker keeps their timesheet history. Anyone currently signed on must sign off first.</div>
+    ${S.workers.map(w=>{
+      const on=!!sessionFor(w.id);
+      return `<div class="card row">
+        <div class="avatar" style="${on?'background:var(--success)':''}">${initials(w.name)}</div>
+        <div class="grow"><b>${esc(w.name)}</b><div class="muted">${esc(w.role)}${on?' · <span style="color:#1E8A4E;font-weight:700">On site</span>':''}</div></div>
+        ${on?'<span class="chip green">Sign off first</span>':`<button class="btn danger sm" onclick="removeWorker('${w.id}')">Remove</button>`}
+      </div>`;}).join("")}
+    <div class="fab-space"></div>`);
+}
+function removeWorker(wid){
+  const w=workerById(wid); if(!w) return;
+  if(sessionFor(wid)){ toast(`${w.name.split(" ")[0]} is signed on — sign off first`); return; }
+  askConfirm("Remove worker",`${esc(w.name)} will be taken off the sign-on list and unassigned from jobs. Timesheet history is kept.`,"Remove", async()=>{
+    S.workers=S.workers.filter(x=>x.id!==wid);
+    S.jobs.forEach(j=>{ j.assigned=j.assigned.filter(id=>id!==wid); });
+    S.notifications.push({id:uid(),ts:Date.now(),text:`${w.name} removed from the crew`,workerIds:[]});
+    await saveState();
+    if(route.workerId===wid){ route.workerId=null; route.tab="who"; }
+    render(); drawRemoveList(); toast(`${w.name} removed`);
+  });
+}
+
+/* ---- NZ address autocomplete (OpenStreetMap/Photon — free, no key) ---- */
+let addrTimer=null;
+const NZ_BBOX="165.7,-47.8,179.9,-33.8";
+function addrLookup(input){
+  clearTimeout(addrTimer);
+  const q=input.value.trim();
+  closeAddrList();
+  if(q.length<3) return;
+  addrTimer=setTimeout(async()=>{
+    try{
+      const r=await fetch(`https://photon.komoot.io/api/?q=${encodeURIComponent(q)}&limit=8&lang=en&bbox=${NZ_BBOX}`);
+      if(!r.ok) return;
+      const d=await r.json();
+      const seen=new Set();
+      const items=(d.features||[])
+        .filter(f=>f.properties && (f.properties.countrycode==="NZ"||f.properties.country==="New Zealand"))
+        .map(f=>formatNZAddr(f.properties))
+        .filter(a=>a && !seen.has(a) && seen.add(a))
+        .slice(0,5);
+      if(items.length && document.activeElement===input) showAddrList(input, items);
+    }catch(e){ /* offline or blocked — free typing still works */ }
+  },300);
+}
+function formatNZAddr(p){
+  const street = p.housenumber && p.street ? `${p.housenumber} ${p.street}` : (p.street || p.name || "");
+  const parts=[street, p.district && p.district!==p.city ? p.district : null, p.city, p.postcode].filter(Boolean);
+  return parts.join(", ");
+}
+function showAddrList(input, items){
+  closeAddrList();
+  const list=document.createElement("div");
+  list.className="addr-list"; list.id="addrList";
+  list.innerHTML = items.map(a=>`<button type="button" onmousedown="pickAddr(this)" data-addr="${esc(a)}">${esc(a)}</button>`).join("")
+    + `<div class="addr-credit">Addresses © OpenStreetMap</div>`;
+  input.parentElement.appendChild(list);
+  list._input=input;
+}
+function pickAddr(btn){
+  const list=document.getElementById("addrList");
+  if(!list || !list._input) return;
+  const input=list._input;
+  input.value=btn.dataset.addr;
+  input.dispatchEvent(new Event("change"));
+  closeAddrList();
+}
+function closeAddrList(){ const l=document.getElementById("addrList"); if(l) l.remove(); }
+
+/* ---- Auckland weather (Open-Meteo — free, no key) ---- */
+let WX=null, wxFetched=0;
+async function loadWeather(){
+  if(WX && Date.now()-wxFetched < 3600000) return; // refresh hourly
+  try{
+    const r=await fetch("https://api.open-meteo.com/v1/forecast?latitude=-36.85&longitude=174.76&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=Pacific%2FAuckland&forecast_days=7");
+    if(!r.ok) return;
+    const d=await r.json();
+    if(!d.daily) return;
+    WX=d.daily; wxFetched=Date.now();
+    if(!document.getElementById("sheetBg") && route.portal==="employer" && (route.tab==="dash"||route.tab==="cal")) render();
+  }catch(e){ /* offline — app works without weather */ }
+}
+function wxEmoji(c){
+  if(c===0) return "☀️"; if(c<=2) return "🌤️"; if(c===3) return "☁️";
+  if(c<=48) return "🌫️"; if(c<=57) return "🌦️"; if(c<=67) return "🌧️";
+  if(c<=77) return "🌨️"; if(c<=82) return "🌧️"; if(c<=86) return "🌨️"; return "⛈️";
+}
+function wxFor(iso){
+  if(!WX || !WX.time) return null;
+  const i=WX.time.indexOf(iso);
+  if(i<0) return null;
+  return {e:wxEmoji(WX.weather_code[i]), hi:Math.round(WX.temperature_2m_max[i]), lo:Math.round(WX.temperature_2m_min[i]), rain:Math.round(WX.precipitation_probability_max[i]||0)};
+}
+
 function openAddWorker(){
   sheet("Add worker", `
     <div class="field"><label>Full name</label><input id="aw-name" placeholder="e.g. Tama Walker"></div>
@@ -1147,14 +1680,15 @@ function eeSign(){
   const sess=sessionFor(wid);
   const myNotifs=[...S.notifications].filter(n=>n.workerIds.includes(wid)).sort((a,b)=>b.ts-a.ts).slice(0,3);
   if(sess){
-    const j=jobById(sess.jobId);
     return `
       <div class="signon-hero">
         <span class="sh-roof">${roofSVG(150,"#29ABE2")}</span>
         <div class="row" style="justify-content:center;gap:8px;margin-bottom:10px"><span class="pulse"></span><span class="chip green">Signed on</span></div>
         <div class="big-clock" id="liveClock" style="color:#fff">${durText(liveMinutes(sess))}</div>
-        <div style="color:#B4B7BD;margin-top:8px;font-size:14px">${esc(j?j.title:"Job")} · since ${fmtTime(sess.start)}</div>
+        <div style="color:#B4B7BD;margin-top:8px;font-size:14px">${esc(jobLabel(sess.jobId))} · since ${fmtTime(sess.start)}</div>
       </div>
+      <button class="btn ghost" style="margin-bottom:10px" onclick="openSwitchJob()">⇄ Switch job — finished here?</button>
+      <button class="btn ghost" style="margin-bottom:10px" onclick="openProgressPhoto()">📷 Add progress photo</button>
       <button class="btn danger" style="padding:19px;font-size:17px" onclick="signOff()">Sign off & save hours</button>
       ${myNotifs.length?`<div class="eyebrow">${roofSVG(15,"var(--blue)")} Notices</div><div class="card">${myNotifs.map(n=>`<div class="notif"><span class="n-dot"></span><div>${esc(n.text)}<time>${fmtTime(n.ts)}</time></div></div>`).join("")}</div>`:""}`;
   }
@@ -1169,8 +1703,15 @@ function eeSign(){
     </div>
     ${myNotifs.length?`<div class="card" style="border-color:var(--blue);background:var(--blue-tint)">${myNotifs.map(n=>`<div class="notif"><span class="n-dot"></span><div>${esc(n.text)}<time>${new Date(n.ts).toLocaleDateString("en-NZ",{day:"numeric",month:"short"})}</time></div></div>`).join("")}</div>`:""}
     <div class="eyebrow">${roofSVG(15,"var(--blue)")} Sign on to your job</div>
-    ${myJobs.length? myJobs.map(j=>jobPickBtn(j,true)).join("") : `<div class="empty"><div class="e-t">No allocations yet</div>You haven't been allocated a job — pick one below or check with the office.</div>`}
-    ${otherJobs.length?`<div class="eyebrow">Other jobs <span class="count">not allocated</span></div>${otherJobs.map(j=>jobPickBtn(j,false)).join("")}`:""}`;
+    ${myJobs.length? myJobs.map(j=>jobPickBtn(j,true)).join("") : `<div class="empty"><div class="e-t">No allocations yet</div>You haven't been allocated a job — pick one below, sign on generally, or check with the office.</div>`}
+    ${otherJobs.length?`<div class="eyebrow">Other jobs <span class="count">not allocated</span></div>${otherJobs.map(j=>jobPickBtn(j,false)).join("")}`:""}
+    <div class="eyebrow">No job to pick?</div>
+    <button class="job-pick" onclick="signOn(null)">
+      <span class="jp-bar" style="background:#8E9196"></span>
+      <span class="grow" style="text-align:left"><b style="font-size:15.5px">General sign-on</b>
+      <div class="muted">No job allocated — hours are still recorded</div></span>
+      <span class="chip grey">Sign on</span>
+    </button>`;
 }
 function jobPickBtn(j,mine){
   return `<button class="job-pick" onclick="signOn('${j.id}')">
@@ -1180,15 +1721,55 @@ function jobPickBtn(j,mine){
     <span class="chip ${mine?'blue':'grey'}">${mine?'Allocated':'Sign on'}</span>
   </button>`;
 }
+function openSwitchJob(){
+  const sess=sessionFor(route.workerId); if(!sess) return;
+  const opts=S.jobs.filter(j=>j.status!=="complete" && j.id!==sess.jobId);
+  const mine=opts.filter(j=>j.assigned.includes(route.workerId));
+  const others=opts.filter(j=>!j.assigned.includes(route.workerId));
+  sheet("Switch job", `
+    <div class="muted" style="margin-bottom:12px">Your ${durText(liveMinutes(sess))} so far saves to <b>${esc(jobLabel(sess.jobId))}</b> and the clock rolls straight onto the new job. No new fit-for-work check — same shift.</div>
+    ${mine.length?`<div class="eyebrow" style="margin-top:0">Your jobs</div>${mine.map(j=>switchPickBtn(j,true)).join("")}`:""}
+    ${others.length?`<div class="eyebrow">Other jobs</div>${others.map(j=>switchPickBtn(j,false)).join("")}`:""}
+    ${sess.jobId?`<div class="eyebrow">No job to pick?</div>
+      <button class="job-pick" onclick="switchJob(null)">
+        <span class="jp-bar" style="background:#8E9196"></span>
+        <span class="grow" style="text-align:left"><b style="font-size:15.5px">General — no job</b>
+        <div class="muted">Keep the clock running without a job</div></span>
+        <span class="chip grey">Switch</span>
+      </button>`:""}
+    ${!opts.length && !sess.jobId?`<div class="empty"><div class="e-t">Nowhere to switch</div>No other open jobs right now.</div>`:""}
+    <div class="fab-space"></div>`);
+}
+function switchPickBtn(j,mine){
+  return `<button class="job-pick" onclick="switchJob('${j.id}')">
+    <span class="jp-bar" style="background:${j.colour||'var(--blue)'}"></span>
+    <span class="grow" style="text-align:left"><b style="font-size:15.5px">${esc(j.title)}</b>
+    <div class="muted">${esc(j.site)}</div></span>
+    <span class="chip ${mine?'blue':'grey'}">Switch</span>
+  </button>`;
+}
+async function switchJob(jid){
+  const i=S.sessions.findIndex(s=>s.workerId===route.workerId); if(i<0) return;
+  const sess=S.sessions[i];
+  const fromLabel=jobLabel(sess.jobId);
+  const mins=Math.max(1, Math.round((Date.now()-sess.start)/60000));
+  const w=workerById(route.workerId);
+  S.timesheets.push({id:uid(),workerId:sess.workerId,jobId:sess.jobId,date:todayISO(),start:sess.start,end:Date.now(),minutes:mins,photo:sess.photo||null,pending:!!sess.backdated});
+  S.sessions[i]={workerId:sess.workerId,jobId:jid,start:Date.now(),photo:sess.photo,backdated:false};
+  S.notifications.push({id:uid(),ts:Date.now(),text:`${w.name} switched to ${jobLabel(jid)} — ${durText(mins)} saved on ${fromLabel}`,workerIds:[]});
+  await saveState(); closeSheet(); render();
+  toast(`Switched — ${durText(mins)} saved on ${fromLabel}`);
+}
+
 let pendingSignOn=null;
 function signOn(jid){
   const now=new Date();
   pendingSignOn={jobId:jid, photo:null};
-  const j=jobById(jid);
+  const j=jid?jobById(jid):null;
   const hhmm=String(now.getHours()).padStart(2,"0")+":"+String(now.getMinutes()).padStart(2,"0");
   sheet("Fit for work check", `
-    <div class="card row"><span class="jp-bar" style="background:${j.colour||'var(--blue)'};width:5px;align-self:stretch;border-radius:4px"></span>
-      <div class="grow"><b>${esc(j.title)}</b><div class="muted">${esc(j.site)}</div></div></div>
+    <div class="card row"><span class="jp-bar" style="background:${jobColour(jid)};width:5px;align-self:stretch;border-radius:4px"></span>
+      <div class="grow"><b>${esc(j?j.title:"General sign-on")}</b><div class="muted">${esc(j?j.site:"No job allocated — hours are still recorded")}</div></div></div>
     <div class="eyebrow">1 · Take your photo</div>
     <div class="cam-wrap" id="camWrap">
       <div class="cam-note">Fit-for-work photo — face the camera</div>
@@ -1293,11 +1874,12 @@ async function confirmSignOn(){
   if(!pendingSignOn || !pendingSignOn.photo || !document.getElementById("fitDecl").checked){ toast("Photo and declaration required"); return; }
   const start=chosenStartTs();
   const backdated = Date.now()-start > 120000;
-  const w=workerById(route.workerId), j=jobById(pendingSignOn.jobId);
+  const w=workerById(route.workerId);
   S.sessions.push({workerId:route.workerId, jobId:pendingSignOn.jobId, start, photo:pendingSignOn.photo, backdated});
-  S.notifications.push({id:uid(),ts:Date.now(),text:`${w.name} signed on — ${j.title}${backdated?" (backdated start, pending approval)":""}`,workerIds:[]});
+  S.notifications.push({id:uid(),ts:Date.now(),text:`${w.name} signed on — ${jobLabel(pendingSignOn.jobId)}${backdated?" (backdated start, pending approval)":""}`,workerIds:[]});
   pendingSignOn=null;
   await saveState(); closeSheet(); render();
+  celebrate();
   toast(backdated ? "Signed on — backdated time needs office approval" : "Signed on — have a good one");
 }
 async function signOff(){
@@ -1305,10 +1887,10 @@ async function signOff(){
   if(i<0) return;
   const sess=S.sessions[i];
   const mins=Math.max(1, Math.round((Date.now()-sess.start)/60000));
-  const w=workerById(route.workerId), j=jobById(sess.jobId);
+  const w=workerById(route.workerId);
   S.timesheets.push({id:uid(),workerId:sess.workerId,jobId:sess.jobId,date:todayISO(),start:sess.start,end:Date.now(),minutes:mins,photo:sess.photo||null,pending:!!sess.backdated});
   S.sessions.splice(i,1);
-  S.notifications.push({id:uid(),ts:Date.now(),text:`${w.name} signed off ${j?j.title:""} — ${durText(mins)}${sess.backdated?" (awaiting approval)":""}`,workerIds:[]});
+  S.notifications.push({id:uid(),ts:Date.now(),text:`${w.name} signed off ${jobLabel(sess.jobId)} — ${durText(mins)}${sess.backdated?" (awaiting approval)":""}`,workerIds:[]});
   await saveState(); render();
   toast(sess.backdated ? `Signed off — ${durText(mins)} sent for approval` : `Signed off — ${durText(mins)} saved to timesheet`);
 }
@@ -1342,8 +1924,8 @@ function eeTimesheet(){
       return `<div class="card">
         <div class="row" style="margin-bottom:6px"><b>${fmtDateLong(d)}</b><b style="margin-left:auto;font-family:var(--disp);font-size:18px">${durText(tot)}</b></div>
         ${rows.map(t=>{ const j=jobById(t.jobId);
-          return `<div class="step-line"><span style="width:5px;height:22px;border-radius:3px;background:${j?j.colour:'#999'};flex-shrink:0"></span>
-          <span class="grow">${esc(j?j.title:"(deleted job)")}${t.pending?' <span class="chip amber">Awaiting approval</span>':''}${t.declined?' <span class="chip red">Declined</span>':''}</span>
+          return `<div class="step-line"><span style="width:5px;height:22px;border-radius:3px;background:${jobColour(t.jobId)};flex-shrink:0"></span>
+          <span class="grow">${esc(jobLabel(t.jobId))}${t.pending?' <span class="chip amber">Awaiting approval</span>':''}${t.declined?' <span class="chip red">Declined</span>':''}</span>
           <span class="muted">${fmtTime(t.start)}–${fmtTime(t.end)}</span><b style="min-width:52px;text-align:right;${t.declined?'text-decoration:line-through;color:var(--muted)':''}">${durText(t.minutes)}</b></div>`;}).join("")}
       </div>`;}).join("") :
       `<div class="empty">${icons.sheet.replace('currentColor','#9EA1A8').replace('<svg','<svg width="44" height="44"')}<div class="e-t">No hours yet</div>Sign on to a job and your hours land here automatically.</div>`}`;
@@ -1351,10 +1933,9 @@ function eeTimesheet(){
 
 function openMissedTime(){
   const activeJobs=S.jobs.filter(j=>j.status!=="complete");
-  if(!activeJobs.length){ toast("No open jobs to log time against"); return; }
   sheet("Add missed time", `
     <div class="muted" style="margin-bottom:12px">For when you forgot to sign on. The office will review and approve it before it counts.</div>
-    <div class="field"><label>Job</label><select id="mt-job">${activeJobs.map(j=>`<option value="${j.id}">${esc(j.title)}</option>`).join("")}</select></div>
+    <div class="field"><label>Job</label><select id="mt-job">${activeJobs.map(j=>`<option value="${j.id}">${esc(j.title)}</option>`).join("")}<option value="">General — no job</option></select></div>
     <div class="field"><label>Date</label><input type="date" id="mt-date" value="${todayISO()}" max="${todayISO()}"></div>
     <div class="f2">
       <div class="field"><label>Start</label><input type="time" id="mt-start" value="07:00"></div>
@@ -1364,7 +1945,7 @@ function openMissedTime(){
     <div class="fab-space"></div>`);
 }
 async function saveMissedTime(){
-  const jid=document.getElementById("mt-job").value;
+  const jid=document.getElementById("mt-job").value || null;
   const date=document.getElementById("mt-date").value;
   const s=document.getElementById("mt-start").value, e=document.getElementById("mt-end").value;
   if(!date||!s||!e){ toast("Fill in the date and times"); return; }
@@ -1375,9 +1956,9 @@ async function saveMissedTime(){
   if(end<=start){ toast("Finish must be after start"); return; }
   if(start.getTime()>Date.now()){ toast("Can't log time in the future"); return; }
   const mins=Math.round((end-start)/60000);
-  const w=workerById(route.workerId), j=jobById(jid);
+  const w=workerById(route.workerId);
   S.timesheets.push({id:uid(),workerId:route.workerId,jobId:jid,date,start:start.getTime(),end:end.getTime(),minutes:mins,pending:true,manual:true});
-  S.notifications.push({id:uid(),ts:Date.now(),text:`${w.name} submitted ${durText(mins)} on ${j.title} for approval`,workerIds:[]});
+  S.notifications.push({id:uid(),ts:Date.now(),text:`${w.name} submitted ${durText(mins)} on ${jobLabel(jid)} for approval`,workerIds:[]});
   await saveState(); closeSheet(); render(); toast(`${durText(mins)} submitted — awaiting office approval`);
 }
 
@@ -1395,6 +1976,94 @@ function eeSchedule(){
     `<div class="empty">${icons.cal.replace('currentColor','#9EA1A8').replace('<svg','<svg width="44" height="44"')}<div class="e-t">Nothing scheduled</div>Jobs allocated to you by the office will show here.</div>`}`;
 }
 
+/* ---- progress photos ---- */
+let progStream=null, progShot=null;
+function openProgressPhoto(){
+  progShot=null;
+  const sess=sessionFor(route.workerId);
+  sheet("Progress photo", `
+    <div class="muted" style="margin-bottom:12px">Attached to <b>${esc(jobLabel(sess?sess.jobId:null))}</b> — the office sees it straight away.</div>
+    <div class="cam-wrap" id="progWrap">
+      <div class="cam-note">Point at the work — tap to capture</div>
+      <video id="progVideo" autoplay playsinline muted style="transform:none"></video>
+      <button class="cam-cap" onclick="captureProg()" aria-label="Take photo"></button>
+    </div>
+    <button class="photo-btn" id="progBtn" onclick="startProgCam()">📷 Open camera</button>
+    <input type="file" id="progFile" accept="image/*" capture="environment" style="display:none" onchange="progFilePicked(this)">
+    <div id="progPreview"></div>
+    <div class="field" style="margin-top:12px"><label>Caption (optional)</label><input id="progNote" placeholder="e.g. Framing complete, ready for pre-line"></div>
+    <button class="btn primary" id="progSave" disabled onclick="saveProgressPhoto()">Save progress photo</button>
+    <div class="fab-space"></div>`);
+}
+async function startProgCam(){
+  if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
+    document.getElementById("progFile").click(); return;
+  }
+  try{
+    progStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:"environment",width:{ideal:1280}},audio:false});
+    document.getElementById("progVideo").srcObject=progStream;
+    document.getElementById("progWrap").classList.add("live");
+    document.getElementById("progBtn").style.display="none";
+  }catch(err){
+    toast("Camera blocked — using your device camera app instead");
+    document.getElementById("progFile").click();
+  }
+}
+function progProcess(source, w, h){
+  const max=640, sc=Math.min(1, max/Math.max(w,h));
+  const cv=document.createElement("canvas");
+  cv.width=Math.round(w*sc); cv.height=Math.round(h*sc);
+  cv.getContext("2d").drawImage(source,0,0,cv.width,cv.height);
+  progShot=cv.toDataURL("image/jpeg",0.55);
+  const btn=document.getElementById("progBtn");
+  btn.style.display="flex"; btn.classList.add("done"); btn.innerHTML="✓ Photo taken — retake";
+  document.getElementById("progPreview").innerHTML=`<img class="pfull" style="margin-top:10px" src="${progShot}" alt="Progress photo">`;
+  document.getElementById("progSave").disabled=false;
+}
+function captureProg(){
+  const v=document.getElementById("progVideo");
+  if(!v || !v.videoWidth){ toast("Camera's still warming up — try again"); return; }
+  progProcess(v, v.videoWidth, v.videoHeight);
+  stopProgCam();
+}
+function progFilePicked(input){
+  const file=input.files && input.files[0];
+  if(!file) return;
+  const img=new Image();
+  const reader=new FileReader();
+  reader.onload=e=>{ img.onload=()=>progProcess(img,img.width,img.height); img.src=e.target.result; };
+  reader.readAsDataURL(file);
+}
+function stopProgCam(){
+  if(progStream){ progStream.getTracks().forEach(t=>t.stop()); progStream=null; }
+  const wrap=document.getElementById("progWrap");
+  if(wrap) wrap.classList.remove("live");
+  const v=document.getElementById("progVideo");
+  if(v) v.srcObject=null;
+}
+async function saveProgressPhoto(){
+  if(!progShot){ toast("Take a photo first"); return; }
+  const sess=sessionFor(route.workerId);
+  const w=workerById(route.workerId);
+  const note=document.getElementById("progNote").value.trim();
+  (S.photos=S.photos||[]).push({id:uid(),workerId:route.workerId,jobId:sess?sess.jobId:null,ts:Date.now(),note,img:progShot});
+  S.notifications.push({id:uid(),ts:Date.now(),text:`${w.name} added a progress photo — ${jobLabel(sess?sess.jobId:null)}${note?`: "${note}"`:""}`,workerIds:[]});
+  progShot=null;
+  await saveState(); closeSheet(); render(); toast("Progress photo sent to the office");
+}
+function viewProgress(id){
+  const p=(S.photos||[]).find(x=>x.id===id); if(!p) return;
+  const w=workerById(p.workerId);
+  sheet("Progress photo", `
+    <img class="pfull" src="${p.img}" alt="Progress photo">
+    <div class="card">
+      <b>${esc(jobLabel(p.jobId))}</b>
+      ${p.note?`<div style="margin-top:6px">"${esc(p.note)}"</div>`:""}
+      <div class="muted" style="margin-top:6px">${esc(w?w.name:"(removed)")} · ${new Date(p.ts).toLocaleDateString("en-NZ",{day:"numeric",month:"short"})} · ${fmtTime(p.ts)}</div>
+    </div>
+    <div class="fab-space"></div>`);
+}
+
 /* ================= SHEET (modal) ================= */
 function sheet(title, bodyHTML){
   closeSheet();
@@ -1406,10 +2075,12 @@ function sheet(title, bodyHTML){
   bg.addEventListener("click",e=>{ if(e.target===bg) closeSheet(); });
   $app.appendChild(bg);
 }
-function closeSheet(){ if(typeof stopFitCam==="function") stopFitCam(); const s=document.getElementById("sheetBg"); if(s) s.remove(); }
+function closeSheet(){ if(typeof stopFitCam==="function") stopFitCam(); if(typeof stopProgCam==="function") stopProgCam(); const s=document.getElementById("sheetBg"); if(s) s.remove(); }
 
 /* ================= BOOT ================= */
 (async function(){
+  document.getElementById("appIcon").href=LOGO;
+  document.getElementById("appIconTouch").href=LOGO;
   $app.innerHTML=`<div class="gate">${roofSVG(70,"#29ABE2")}<div class="gate-foot" style="margin-top:16px">Loading…</div></div>`;
   await loadState();
   render();
