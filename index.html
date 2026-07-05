@@ -280,38 +280,101 @@ function durText(min){ const h=Math.floor(min/60), m=Math.round(min%60); return 
 function initials(name){ return name.split(" ").map(p=>p[0]).slice(0,2).join("").toUpperCase(); }
 
 let lastPayload="";
-async function loadState(){
+let storageMode=null; // 'shared' | 'cloud' | 'personal' | 'local' | 'memory'
+let warnedLocal=false;
+
+/* Cloudflare sync — see README: deploy functions/api/state.js with a KV binding,
+   set APP_KEY to the same secret there and here, then redeploy. */
+const SYNC_URL = "/api/state";
+const APP_KEY  = "toth-jobboard-CHANGE-ME";
+
+async function cloudGet(){
   try{
-    if(window.storage){
-      const r = await window.storage.get("tc:data:v2", true);
-      if(r && r.value){ S = JSON.parse(r.value); lastPayload=r.value; return; }
+    const r = await fetch(SYNC_URL, {headers:{"X-App-Key":APP_KEY}, cache:"no-store"});
+    if(!r.ok) return null;
+    const t = await r.text();
+    return (t && t!=="null") ? t : null;
+  }catch(e){ return null; }
+}
+async function cloudSet(payload){
+  try{
+    const r = await fetch(SYNC_URL, {method:"PUT", headers:{"Content-Type":"application/json","X-App-Key":APP_KEY}, body:payload});
+    return r.ok;
+  }catch(e){ return false; }
+}
+function lsGet(){ try{ return window.localStorage ? localStorage.getItem("tc:data:v2") : null; }catch(e){ return null; } }
+function lsSet(p){ try{ if(window.localStorage){ localStorage.setItem("tc:data:v2", p); return true; } }catch(e){} return false; }
+
+async function tryGet(shared){
+  try{
+    const r = await window.storage.get("tc:data:v2", shared);
+    return (r && r.value) ? r.value : null;
+  }catch(e){ return null; }
+}
+async function trySet(payload, shared){
+  try{ await window.storage.set("tc:data:v2", payload, shared); return true; }
+  catch(e){ return false; }
+}
+
+async function loadState(){
+  if(window.storage){
+    let v = await tryGet(true);
+    if(v){ storageMode="shared"; S=JSON.parse(v); lastPayload=v; return; }
+    v = await tryGet(false);
+    if(v){
+      storageMode="personal"; S=JSON.parse(v); lastPayload=v;
+      saveState(); // try to promote this data to shared for crew-wide sync
+      return;
     }
-  }catch(e){ /* key missing or storage unavailable */ }
-  if(memStore["tc:data:v2"]){ S = JSON.parse(memStore["tc:data:v2"]); return; }
+  } else {
+    const v = await cloudGet();
+    if(v){ storageMode="cloud"; S=JSON.parse(v); lastPayload=v; return; }
+  }
+  const lv = lsGet();
+  if(lv){ storageMode="local"; S=JSON.parse(lv); lastPayload=lv; saveState(); return; }
+  if(memStore["tc:data:v2"]){ S=JSON.parse(memStore["tc:data:v2"]); storageMode="memory"; return; }
   S = seed();
   await saveState();
 }
+
 async function saveState(){
   // keep photos only on the 40 most recent entries so storage stays lean
   const recent=[...S.timesheets].sort((a,b)=>b.start-a.start).slice(40);
   recent.forEach(t=>{ if(t.photo) delete t.photo; });
   const payload = JSON.stringify(S);
-  try{
-    if(window.storage){ await window.storage.set("tc:data:v2", payload, true); lastPayload=payload; return; }
-  }catch(e){ console.error("storage save failed", e); }
-  memStore["tc:data:v2"] = payload;
+  memStore["tc:data:v2"]=payload; // always keep an in-session copy
+  lsSet(payload);                 // and a per-device backup where allowed
+  if(window.storage){
+    if(await trySet(payload, true)){ storageMode="shared"; lastPayload=payload; return; }
+    if(await trySet(payload, false)){
+      if(storageMode!=="personal" && !warnedLocal){
+        warnedLocal=true;
+        toast("Saved — crew-wide sync activates once the app is published");
+      }
+      storageMode="personal"; lastPayload=payload; return;
+    }
+  } else if(await cloudSet(payload)){
+    storageMode="cloud"; lastPayload=payload; return;
+  }
+  if(lsGet()===payload){
+    storageMode="local";
+    if(!warnedLocal){ warnedLocal=true; toast("Saved on this device only — sync endpoint not reachable"); }
+    return;
+  }
+  storageMode="memory";
+  if(!warnedLocal){ warnedLocal=true; toast("Saving in this session only"); }
 }
+
 async function refreshState(){
   // pull latest shared data so sign-ons from other devices appear live
-  if(!window.storage) return;
   if(document.getElementById("sheetBg")) return; // don't clobber an open form
-  try{
-    const r = await window.storage.get("tc:data:v2", true);
-    if(r && r.value && r.value!==lastPayload){
-      S = JSON.parse(r.value); lastPayload=r.value;
-      render();
-    }
-  }catch(e){ /* ignore transient errors */ }
+  let v=null;
+  if(window.storage){ v = await tryGet(true); if(v) storageMode="shared"; }
+  else { v = await cloudGet(); if(v) storageMode="cloud"; }
+  if(v && v!==lastPayload){
+    S=JSON.parse(v); lastPayload=v;
+    render();
+  }
 }
 
 function seed(){
