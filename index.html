@@ -267,7 +267,7 @@ let route = {portal:null, tab:null, workerId:null};
 let calCursor = new Date(); calCursor.setDate(1);
 let calSel = null;
 let tick = null;
-let memStore = {};         // fallback if window.storage unavailable
+let memStore = {};         // last-resort in-session fallback
 
 function todayISO(d){ const x = d||new Date(); return x.getFullYear()+"-"+String(x.getMonth()+1).padStart(2,"0")+"-"+String(x.getDate()).padStart(2,"0"); }
 function uid(){ return Math.random().toString(36).slice(2,9); }
@@ -280,11 +280,11 @@ function durText(min){ const h=Math.floor(min/60), m=Math.round(min%60); return 
 function initials(name){ return name.split(" ").map(p=>p[0]).slice(0,2).join("").toUpperCase(); }
 
 let lastPayload="";
-let storageMode=null; // 'shared' | 'cloud' | 'personal' | 'local' | 'memory'
+let storageMode=null; // 'cloud' | 'local' | 'memory'
 let warnedLocal=false;
 
-/* Cloudflare sync — see README: deploy functions/api/state.js with a KV binding,
-   set APP_KEY to the same secret there and here, then redeploy. */
+/* Sync backend — see README: deploy functions/api/state.js on Cloudflare with a KV
+   binding, set APP_KEY to the same secret there and here, then redeploy. */
 const SYNC_URL = "/api/state";
 const APP_KEY  = "toth-jobboard-CHANGE-ME";
 
@@ -305,33 +305,11 @@ async function cloudSet(payload){
 function lsGet(){ try{ return window.localStorage ? localStorage.getItem("tc:data:v2") : null; }catch(e){ return null; } }
 function lsSet(p){ try{ if(window.localStorage){ localStorage.setItem("tc:data:v2", p); return true; } }catch(e){} return false; }
 
-async function tryGet(shared){
-  try{
-    const r = await window.storage.get("tc:data:v2", shared);
-    return (r && r.value) ? r.value : null;
-  }catch(e){ return null; }
-}
-async function trySet(payload, shared){
-  try{ await window.storage.set("tc:data:v2", payload, shared); return true; }
-  catch(e){ return false; }
-}
-
 async function loadState(){
-  if(window.storage){
-    let v = await tryGet(true);
-    if(v){ storageMode="shared"; S=JSON.parse(v); lastPayload=v; return; }
-    v = await tryGet(false);
-    if(v){
-      storageMode="personal"; S=JSON.parse(v); lastPayload=v;
-      saveState(); // try to promote this data to shared for crew-wide sync
-      return;
-    }
-  } else {
-    const v = await cloudGet();
-    if(v){ storageMode="cloud"; S=JSON.parse(v); lastPayload=v; return; }
-  }
+  const v = await cloudGet();
+  if(v){ storageMode="cloud"; S=JSON.parse(v); lastPayload=v; return; }
   const lv = lsGet();
-  if(lv){ storageMode="local"; S=JSON.parse(lv); lastPayload=lv; saveState(); return; }
+  if(lv){ storageMode="local"; S=JSON.parse(lv); lastPayload=lv; saveState(); return; } // push local copy up once the API is reachable
   if(memStore["tc:data:v2"]){ S=JSON.parse(memStore["tc:data:v2"]); storageMode="memory"; return; }
   S = seed();
   await saveState();
@@ -344,18 +322,7 @@ async function saveState(){
   const payload = JSON.stringify(S);
   memStore["tc:data:v2"]=payload; // always keep an in-session copy
   lsSet(payload);                 // and a per-device backup where allowed
-  if(window.storage){
-    if(await trySet(payload, true)){ storageMode="shared"; lastPayload=payload; return; }
-    if(await trySet(payload, false)){
-      if(storageMode!=="personal" && !warnedLocal){
-        warnedLocal=true;
-        toast("Saved — crew-wide sync activates once the app is published");
-      }
-      storageMode="personal"; lastPayload=payload; return;
-    }
-  } else if(await cloudSet(payload)){
-    storageMode="cloud"; lastPayload=payload; return;
-  }
+  if(await cloudSet(payload)){ storageMode="cloud"; lastPayload=payload; return; }
   if(lsGet()===payload){
     storageMode="local";
     if(!warnedLocal){ warnedLocal=true; toast("Saved on this device only — sync endpoint not reachable"); }
@@ -368,10 +335,9 @@ async function saveState(){
 async function refreshState(){
   // pull latest shared data so sign-ons from other devices appear live
   if(document.getElementById("sheetBg")) return; // don't clobber an open form
-  let v=null;
-  if(window.storage){ v = await tryGet(true); if(v) storageMode="shared"; }
-  else { v = await cloudGet(); if(v) storageMode="cloud"; }
+  const v = await cloudGet();
   if(v && v!==lastPayload){
+    storageMode="cloud";
     S=JSON.parse(v); lastPayload=v;
     render();
   }
